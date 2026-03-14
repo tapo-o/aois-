@@ -111,7 +111,6 @@ def main():
         elif choice == "3":
             handle_bcd_menu()
         elif choice == "0":
-            print("Пока!")
             break
         else:
             print("Неверный ввод, попробуйте снова.")
