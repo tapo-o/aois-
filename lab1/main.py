@@ -5,12 +5,12 @@ from src.ieee import (
     float_to_ieee, ieee_to_float, 
     add_ieee, sub_ieee, multiply_ieee, divide_ieee
 )
-# Импорты для целых чисел (перевод)
+# Импорты для целых чисел (перевод и логика)
 from src.transformInt import (
     dec_to_direct_bin, dec_to_reverse_bin, dec_to_twos_complement,
-    direct_bin_to_dec, twos_complement_to_dec
+    direct_bin_to_dec, twos_complement_to_dec, fixedToDecimal
 )
-# Импорты для целых чисел (арифметика)
+# Твои функции из src.binops
 from src.binops import add_binary, subtract, multiply, divide
 # Импорты для BCD
 from src.bcd5421 import number_to_bcd_array, add_bcd_5421
@@ -21,7 +21,7 @@ def format_bits(bit_list: list[int]) -> str:
 def get_float(prompt: str) -> float:
     while True:
         try: return float(input(prompt))
-        except ValueError: print("Ошибка: введите число (13.5)")
+        except ValueError: print("Ошибка: введите число")
 
 def get_int(prompt: str) -> int:
     while True:
@@ -52,17 +52,20 @@ def handle_ieee_menu():
     b1, b2 = float_to_ieee(v1), float_to_ieee(v2)
     
     try:
-        ops = {"1": add_ieee, "2": sub_ieee, "3": multiply_ieee, "4": divide_ieee}
-        if choice in ops:
-            res_bin = ops[choice](b1, b2)
-            print(f"\nРезультат (Float): {ieee_to_float(res_bin)}")
-            print(f"Результат (Bits):  {format_bits(res_bin)}")
+        if choice == "1": res_bin = add_ieee(b1, b2)
+        elif choice == "2": res_bin = sub_ieee(b1, b2)
+        elif choice == "3": res_bin = multiply_ieee(b1, b2)
+        elif choice == "4": res_bin = divide_ieee(b1, b2)
+        else: return
+
+        print(f"\nРезультат (Float): {ieee_to_float(res_bin)}")
+        print(f"Результат (Bits):  {format_bits(res_bin)}")
     except ZeroDivisionError:
         print("Ошибка: Деление на ноль!")
 
 def handle_int_menu():
     print("\n--- ЦЕЛЫЕ ЧИСЛА ---")
-    print("1. Посмотреть коды числа (прямой/обратный/доп)")
+    print("1. Посмотреть коды")
     print("2. Сложение (+)")
     print("3. Вычитание (-)")
     print("4. Умножение (*)")
@@ -80,32 +83,35 @@ def handle_int_menu():
     n1 = get_int("Введите 1-е число: ")
     n2 = get_int("Введите 2-е число: ")
 
-    if choice == "2": # Сложение
+    if choice == "2": # Сложение (add_binary)
         b1, b2 = dec_to_twos_complement(n1), dec_to_twos_complement(n2)
         res = add_binary(b1, b2)
-        print(f"Результат (Dec):  {twos_complement_to_dec(res)}")
+        print(f"\nРезультат (Dec):  {twos_complement_to_dec(res)}")
         print(f"Результат (Bits): {format_bits(res)}")
 
-    elif choice == "3": # Вычитание
+    elif choice == "3": # Вычитание (subtract)
         b1, b2 = dec_to_twos_complement(n1), dec_to_twos_complement(n2)
         res = subtract(b1, b2)
-        print(f"Результат (Dec):  {twos_complement_to_dec(res)}")
+        print(f"\nРезультат (Dec):  {twos_complement_to_dec(res)}")
         print(f"Результат (Bits): {format_bits(res)}")
 
-    elif choice == "4": # Умножение
+    elif choice == "4": # Умножение (multiply)
         b1, b2 = dec_to_direct_bin(n1), dec_to_direct_bin(n2)
         res = multiply(b1, b2)
-        print(f"Результат (Dec):  {direct_bin_to_dec(res)}")
+        # Для корректного перевода в Dec используем прямой код
+        print(f"\nРезультат (Dec):  {direct_bin_to_dec(res)}")
         print(f"Результат (Bits): {format_bits(res)}")
 
-    elif choice == "5": # Деление
+    elif choice == "5": # Деление (divide)
         b1, b2 = dec_to_direct_bin(n1), dec_to_direct_bin(n2)
         try:
             sign, integer, fraction = divide(b1, b2)
-            # Для простоты вывода покажем целую часть
-            res_dec = direct_bin_to_dec([sign] + integer[1:])
-            print(f"Целая часть (Dec): {res_dec}")
-            print(f"Целая часть (Bits): {format_bits(integer)}")
+            # Используем твою функцию fixedToDecimal для красивого вывода
+            res_decimal = fixedToDecimal(sign, integer, fraction)
+            
+            print(f"\nРезультат (Dec):    {res_decimal}")
+            print(f"Знак (Bit):         {sign}")
+            print(f"Целая часть (Bits):  {format_bits(integer)}")
             print(f"Дробная часть (Bits): {format_bits(fraction)}")
         except ValueError as e:
             print(f"Ошибка: {e}")

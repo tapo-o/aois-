@@ -55,3 +55,19 @@ def twos_complement_to_dec(binary_array: list[int]) -> int:
         value += binary_array[i] * (2 ** power)
         
     return value
+
+def fixedToDecimal(sign: int, integerPart: list[int], fractionPart: list[int]) -> float:
+    """
+    Преобразование числа с фиксированной точкой в десятичное.
+    """
+    integerValue = 0
+    for i, bit in enumerate(reversed(integerPart)):
+        integerValue += bit * (2 ** i)
+    
+    fractionValue = 0.0
+    for i, bit in enumerate(fractionPart):
+        fractionValue += bit * (2 ** -(i + 1))
+        
+    result = integerValue + fractionValue
+    
+    return -result if sign == 1 else result
