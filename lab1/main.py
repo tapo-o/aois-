@@ -13,7 +13,7 @@ from src.transformInt import (
 # Импорты бинарных операций
 from src.binops import add_binary, subtract, multiply, divide
 # Импорты BCD
-from src.bcd5421 import number_to_bcd_array, add_bcd_5421
+from src.bcd5421 import number_to_bcd_array, add_bcd_5421, decode_digit_5421
 
 def format_bits(bit_list: list[int]) -> str:
     """Преобразует список бит в строку для вывода."""
@@ -31,11 +31,6 @@ def print_all_int_codes(label: str, num: int):
     print(f"  Доп. код:    {format_bits(twos)}")
 
 def print_result_in_all_codes(res_bits: list[int], mode: str):
-    """
-    Выводит результат операции во всех кодах.
-    mode: 'dop' если результат в дополнительном коде, 'direct' если в прямом.
-    """
-    # Сначала узнаем десятичное значение, чтобы построить остальные коды
     if mode == 'dop':
         val = twos_complement_to_dec(res_bits)
     else:
@@ -83,17 +78,14 @@ def handle_int_menu():
     print("-" * 45)
 
     if choice == "2":
-        # Сложение выполняется в доп. коде
         res = add_binary(dec_to_twos_complement(n1), dec_to_twos_complement(n2))
         print_result_in_all_codes(res, 'dop')
 
     elif choice == "3":
-        # Вычитание выполняется в доп. коде
         res = subtract(dec_to_twos_complement(n1), dec_to_twos_complement(n2))
         print_result_in_all_codes(res, 'dop')
 
     elif choice == "4":
-        # Умножение обычно возвращает прямой код (знак + модуль)
         res = multiply(dec_to_direct_bin(n1), dec_to_direct_bin(n2))
         print_result_in_all_codes(res, 'direct')
 
@@ -146,6 +138,7 @@ def handle_bcd_menu():
         n1, n2 = get_int("1-е: "), get_int("2-е: ")
         res = add_bcd_5421(number_to_bcd_array(n1), number_to_bcd_array(n2))
         print(f"Сумма BCD: {' '.join(format_bits(b) for b in res)}")
+        # print(f"Сумма: {decode_digit_5421(add_bcd_5421(number_to_bcd_array(n1), number_to_bcd_array(n2)))}")
 
 def main():
     while True:
