@@ -44,7 +44,6 @@ def parse_binary(parser_lower: Callable, op_str: str, s: str) -> Tuple[AstNode, 
         
     return recurse(left, s_rest)
 
-# Цепочка приоритетов: & -> | -> -> -> ~
 def parse_and(s: str) -> Tuple[AstNode, str]: return parse_binary(parse_primary, '&', s)
 def parse_or(s: str) -> Tuple[AstNode, str]: return parse_binary(parse_and, '|', s)
 def parse_impl(s: str) -> Tuple[AstNode, str]: return parse_binary(parse_or, '->', s)

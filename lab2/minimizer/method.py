@@ -58,7 +58,6 @@ def get_minimal_cover(prime_implicants: Tuple[Tuple[int, ...], ...], terms: Tupl
     uncovered = set(terms)
     cover = []
     
-    # Ищем ядро (обязательные импликанты)
     for m in terms:
         covering = [imp for imp in prime_implicants if covers(imp, m)]
         if len(covering) == 1 and covering[0] not in cover:
@@ -67,7 +66,6 @@ def get_minimal_cover(prime_implicants: Tuple[Tuple[int, ...], ...], terms: Tupl
     for imp in cover:
         uncovered -= {m for m in uncovered if covers(imp, m)}
         
-    # Жадный алгоритм для покрытия оставшихся единиц/нулей
     remaining_imps = list(set(prime_implicants) - set(cover))
     while uncovered:
         if not remaining_imps: break

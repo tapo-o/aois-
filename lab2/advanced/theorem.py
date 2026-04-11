@@ -13,7 +13,6 @@ def is_post_monotonic(table: TruthTable) -> bool:
     def bitwise_le(t1: Tuple[int, ...], t2: Tuple[int, ...]) -> bool:
         return all(v1 <= v2 for v1, v2 in zip(t1, t2))
         
-    # Ищем контрпримеры без itertools
     for i in range(len(table)):
         for j in range(i + 1, len(table)):
             p0, p1 = table[i], table[j]
