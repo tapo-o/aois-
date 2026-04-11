@@ -142,15 +142,17 @@ def run():
                 min_cnf = get_minimal_cover(prime_cnf, sknf_rows)
                 final_mknf = format_implicants(min_cnf, vars_tuple, is_cnf=True)
 
-            print("\nИТОГОВЫЕ МИНИМАЛЬНЫЕ ФОРМЫ:")
-            print(f"МДНФ: {final_mdnf}")
-            print(f"МКНФ: {final_mknf}")
+            
 
             # 6. Карта Карно
             print("\n>>> ТАБЛИЧНЫЙ МЕТОД (КАРТА КАРНО):")
             k_map = build_karnaugh_map_string(table, len(vars_tuple), vars_tuple)
             print(k_map)
 
+            print("\nИТОГОВЫЕ МИНИМАЛЬНЫЕ ФОРМЫ:")
+            print(f"МДНФ: {final_mdnf}")
+            print(f"МКНФ: {final_mknf}")
+            
             print("\n" + "="*60)
 
         except Exception as e:
