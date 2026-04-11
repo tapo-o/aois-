@@ -1,4 +1,4 @@
-from core.analyzer import (
+from src.core.analyzer import (
     generate_truth_table, find_dummy_variables, 
     get_standard_forms, get_numeric_forms, get_index_form
 )

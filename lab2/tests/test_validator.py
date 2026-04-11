@@ -1,5 +1,5 @@
 import pytest
-from parser.validator import validate_input
+from src.parser.validator import validate_input
 
 def test_valid_inputs():
     assert validate_input("a & b") == "a&b"

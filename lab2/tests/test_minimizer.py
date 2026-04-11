@@ -1,4 +1,4 @@
-from minimizer.method import (
+from src.minimizer.method import (
     diff_by_one, get_prime_implicants_with_steps, 
     get_minimal_cover, format_implicants, build_karnaugh_map_string
 )

@@ -1,5 +1,5 @@
 from typing import Tuple
-from core.analyzer import TruthTable
+from src.core.analyzer import TruthTable
 
 def is_post_t0(table: TruthTable) -> bool: return table[0][1] == 0
 def is_post_t1(table: TruthTable) -> bool: return table[-1][1] == 1

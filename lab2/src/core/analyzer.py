@@ -1,5 +1,5 @@
 from typing import Tuple
-from parser.ast_builder import build_ast, get_variables_from_ast, evaluate_ast
+from src.parser.ast_builder import build_ast, get_variables_from_ast, evaluate_ast
 
 TruthTable = Tuple[Tuple[Tuple[int, ...], int], ...]
 

@@ -1,8 +1,8 @@
-from advanced.theorem import (
+from src.advanced.theorem import (
     is_post_t0, is_post_t1, is_post_self_dual, 
     is_post_monotonic, is_post_linear, get_zhegalkin_coeffs
 )
-from core.analyzer import generate_truth_table
+from src.core.analyzer import generate_truth_table
 
 def test_classes_logic():
     _, t_const1 = generate_truth_table("a | !a")

@@ -1,5 +1,5 @@
 import pytest
-from parser.ast_builder import build_ast, evaluate_ast, get_variables_from_ast, build_ast_safe
+from src.parser.ast_builder import build_ast, evaluate_ast, get_variables_from_ast, build_ast_safe
 
 def test_node_structure():
     node = build_ast("a & b")

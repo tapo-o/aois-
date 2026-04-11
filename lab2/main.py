@@ -1,4 +1,4 @@
-from core.analyzer import (
+from src.core.analyzer import (
     generate_truth_table, 
     get_boolean_derivative, 
     find_dummy_variables, 
@@ -6,7 +6,7 @@ from core.analyzer import (
     get_numeric_forms, 
     get_index_form
 )
-from advanced.theorem import (
+from src.advanced.theorem import (
     is_post_t0, 
     is_post_t1, 
     is_post_self_dual, 
@@ -16,20 +16,18 @@ from advanced.theorem import (
     format_zhegalkin, 
     get_zhegalkin_coeffs
 )
-from minimizer.method import (
+from src.minimizer.method import (
     get_prime_implicants_with_steps, 
     build_coverage_matrix, 
     build_karnaugh_map_string, 
     get_minimal_cover, 
     format_implicants
 )
-from parser.validator import validate_input
+from src.parser.validator import validate_input
 
 def run():
     print("="*60)
-    print("АНАЛИЗАТОР БУЛЕВЫХ ФУНКЦИЙ (ЛАБОРАТОРНАЯ РАБОТА)")
-    print("Поддерживаемые переменные: a, b, c, d, e")
-    print("Операторы: & (И), | (ИЛИ), ! (НЕ), -> (Импл), ~ (Эквив)")
+    print("АНАЛИЗАТОР БУЛЕВЫХ ФУНКЦИЙ")
     print("="*60)
 
     while True:
