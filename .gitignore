@@ -1,5 +1,4 @@
 .DS_Store
-infob/
-tvims/*
-chm/*
-otis/*
+__pycache__
+.coverage
+
