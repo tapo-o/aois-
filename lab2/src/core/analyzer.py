@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 from src.parser.ast_builder import build_ast, get_variables_from_ast, evaluate_ast
 
 TruthTable = Tuple[Tuple[Tuple[int, ...], int], ...]
@@ -42,6 +42,43 @@ def get_boolean_derivative(table: TruthTable, var_idx: int) -> TruthTable:
         new_table.append((rem_vals, df))
         
     return tuple(new_table)
+
+def get_multiple_derivative(table: TruthTable, var_indices: Tuple[int, ...]) -> TruthTable:
+    """Вычисляет производную (любого порядка) по заданным переменным."""
+    var_indices_set = set(var_indices)
+    new_table = []
+    seen = set()
+    
+    rem_indices = tuple(i for i in range(len(table[0][0])) if i not in var_indices_set)
+    
+    for row in table:
+        rem_vals = tuple(row[0][i] for i in rem_indices)
+        if rem_vals in seen:
+            continue
+        seen.add(rem_vals)
+        
+        df = 0
+        for r in table:
+            if tuple(r[0][i] for i in rem_indices) == rem_vals:
+                df ^= r[1]
+                
+        new_table.append((rem_vals, df))
+        
+    return tuple(new_table)
+
+def get_combinations(arr: Tuple[int, ...], r: int) -> Tuple[Tuple[int, ...], ...]:
+    """Генерирует все комбинации элементов без использования itertools."""
+    result = []
+    def backtrack(start: int, path: List[int]):
+        if len(path) == r:
+            result.append(tuple(path))
+            return
+        for i in range(start, len(arr)):
+            path.append(arr[i])
+            backtrack(i + 1, path)
+            path.pop()
+    backtrack(0, [])
+    return tuple(result)
 
 def find_dummy_variables(table: TruthTable, var_count: int) -> Tuple[int, ...]:
     def is_dummy(var_idx: int) -> bool:

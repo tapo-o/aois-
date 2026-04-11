@@ -4,7 +4,9 @@ from src.core.analyzer import (
     find_dummy_variables, 
     get_standard_forms, 
     get_numeric_forms, 
-    get_index_form
+    get_index_form,
+    get_multiple_derivative,
+    get_combinations
 )
 from src.advanced.theorem import (
     is_post_t0, 
@@ -86,13 +88,19 @@ def run():
 
             # 4. Булева дифференциация
             print("\n" + "="*40)
-            print("БУЛЕВЫ ПРОИЗВОДНЫЕ")
+            print("БУЛЕВЫ ПРОИЗВОДНЫЕ (ВСЕ ПОРЯДКИ)")
             print("="*40)
             
-            for i, var_name in enumerate(vars_tuple):
-                deriv_table = get_boolean_derivative(table, i)
-                deriv_vector = "".join([str(r[1]) for r in deriv_table])
-                print(f"df/d{var_name}: {deriv_vector}")
+            indices = tuple(range(len(vars_tuple)))
+            for r in range(1, len(vars_tuple) + 1):
+                combos = get_combinations(indices, r)
+                for combo in combos:
+                    deriv_table = get_multiple_derivative(table, combo)
+                    deriv_vector = "".join([str(row[1]) for row in deriv_table])
+                    
+                    var_names = "".join([vars_tuple[i] for i in combo])
+                    order = f"{r}" if r > 1 else ""
+                    print(f"d{order}f/d{var_names}: {deriv_vector}")
 
             # 5. Минимизация
             print("\n" + "="*40)
