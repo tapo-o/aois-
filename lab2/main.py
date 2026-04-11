@@ -18,18 +18,19 @@ from src.advanced.theorem import (
     format_zhegalkin, 
     get_zhegalkin_coeffs
 )
+# Импортируем обновленные функции из нового method.py
 from src.minimizer.method import (
-    get_prime_implicants_with_steps, 
-    build_coverage_matrix, 
-    build_karnaugh_map_string, 
-    get_minimal_cover, 
-    format_implicants
+    quine_algorithm,
+    qm_algorithm,
+    kmap_algorithm,
+    build_karnaugh_map_string,
+    build_coverage_matrix
 )
 from src.parser.validator import validate_input
 
 def run():
     print("="*60)
-    print("АНАЛИЗАТОР БУЛЕВЫХ ФУНКЦИЙ")
+    print("УНИВЕРСАЛЬНЫЙ АНАЛИЗАТОР И МИНИМИЗАТОР БУЛЕВЫХ ФУНКЦИЙ")
     print("="*60)
 
     while True:
@@ -55,9 +56,7 @@ def run():
                 vals = " | ".join(map(str, row[0]))
                 print(f"{vals} || {row[1]}")
             
-            idx_bin = "".join(map(str, f_values))
-            print(f"\nИндексная форма (вектор): {idx_bin}")
-            print(f"Десятичный индекс: {get_index_form(table)}")
+            print(f"\nДесятичный индекс: {get_index_form(table)}")
             
             sdnf_nums, sknf_nums = get_numeric_forms(table)
             print(f"Числовая форма СДНФ: ∑({', '.join(map(str, sdnf_nums))})")
@@ -80,85 +79,67 @@ def run():
             print(f"Фиктивные переменные: {', '.join([vars_tuple[i] for i in dummies]) if dummies else 'Нет'}")
 
             print("\nПРОВЕРКА КЛАССОВ ПОСТА:")
-            print(f"  - Сохранение нуля (T0):  {'+' if is_post_t0(table) else '-'}")
-            print(f"  - Сохранение единицы (T1): {'+' if is_post_t1(table) else '-'}")
-            print(f"  - Самодвойственность (S):  {'+' if is_post_self_dual(table) else '-'}")
-            print(f"  - Монотонность (M):        {'+' if is_post_monotonic(table) else '-'}")
-            print(f"  - Линейность (L):          {'+' if is_post_linear(coeffs) else '-'}")
+            print(f"  - T0: {'+' if is_post_t0(table) else '-'}")
+            print(f"  - T1: {'+' if is_post_t1(table) else '-'}")
+            print(f"  - S:  {'+' if is_post_self_dual(table) else '-'}")
+            print(f"  - M:  {'+' if is_post_monotonic(table) else '-'}")
+            print(f"  - L:  {'+' if is_post_linear(coeffs) else '-'}")
 
             # 4. Булева дифференциация
             print("\n" + "="*40)
-            print("БУЛЕВЫ ПРОИЗВОДНЫЕ (ВСЕ ПОРЯДКИ)")
+            print("БУЛЕВЫ ПРОИЗВОДНЫЕ")
             print("="*40)
-            
             indices = tuple(range(len(vars_tuple)))
             for r in range(1, len(vars_tuple) + 1):
                 combos = get_combinations(indices, r)
                 for combo in combos:
                     deriv_table = get_multiple_derivative(table, combo)
                     deriv_vector = "".join([str(row[1]) for row in deriv_table])
-                    
                     var_names = "".join([vars_tuple[i] for i in combo])
-                    order = f"{r}" if r > 1 else ""
-                    print(f"d{order}f/d{var_names}: {deriv_vector}")
+                    print(f"d f / d {var_names}: {deriv_vector}")
 
-            # 5. Минимизация
+            # Подготовка данных для минимизации
+            ones = tuple(row[0] for row in table if row[1] == 1)
+            zeros = tuple(row[0] for row in table if row[1] == 0)
+
+            # 7. Визуализация
             print("\n" + "="*40)
-            print("МИНИМИЗАЦИЯ ФУНКЦИИ")
+            print("ВИЗУАЛИЗАЦИЯ (КАРТА КАРНО)")
+            print("="*40)
+            print(build_karnaugh_map_string(table, len(vars_tuple), vars_tuple))
+            
+            # 5. Минимизация МДНФ
+            print("\n" + "="*40)
+            print("МИНИМИЗАЦИЯ ФУНКЦИИ (МДНФ)")
             print("="*40)
 
-            sdnf_rows = tuple(row[0] for row in table if row[1] == 1)
-            sknf_rows = tuple(row[0] for row in table if row[1] == 0)
-
-            # Расчет МДНФ
-            print("\n>>> ЭТАПЫ ПОИСКА МДНФ (по единицам):")
-            if not sdnf_rows:
-                final_mdnf = "0"
-                print("Функция тождественно ложна.")
-            elif len(sdnf_rows) == 2**len(vars_tuple):
-                final_mdnf = "1"
-                print("Функция тождественно истинна.")
+            if not ones:
+                print("Функция ≡ 0")
+            elif len(ones) == 2**len(vars_tuple):
+                print("Функция ≡ 1")
             else:
-                prime_dnf, steps_dnf = get_prime_implicants_with_steps(sdnf_rows)
-                for step in steps_dnf: print(step)
-                print("\nМатрица покрытия для МДНФ:")
-                print(build_coverage_matrix(prime_dnf, sdnf_rows))
-                min_dnf = get_minimal_cover(prime_dnf, sdnf_rows)
-                final_mdnf = format_implicants(min_dnf, vars_tuple, is_cnf=False)
+                # В новых алгоритмах логика поиска импликант встроена внутрь
+                print(f"1. Метод Квайна (Склеивание):  {quine_algorithm(ones, vars_tuple, False)}")
+                print(f"2. Метод QM (Группировка):     {qm_algorithm(ones, vars_tuple, False)}")
+                print(f"3. Метод Карно (Геометрия):    {kmap_algorithm(ones, vars_tuple, False)}")
 
-            # Расчет МКНФ
-            print("\n>>> ЭТАПЫ ПОИСКА МКНФ (по нулям):")
-            if not sknf_rows:
-                final_mknf = "1"
-                print("Функция тождественно истинна.")
-            elif len(sknf_rows) == 2**len(vars_tuple):
-                final_mknf = "0"
-                print("Функция тождественно ложна.")
+            # 6. Минимизация МКНФ
+            print("\n" + "="*40)
+            print("МИНИМИЗАЦИЯ ФУНКЦИИ (МКНФ)")
+            print("="*40)
+
+            if not zeros:
+                print("Функция ≡ 1")
+            elif len(zeros) == 2**len(vars_tuple):
+                print("Функция ≡ 0")
             else:
-                prime_cnf, steps_cnf = get_prime_implicants_with_steps(sknf_rows)
-                for step in steps_cnf: print(step)
-                print("\nМатрица покрытия для МКНФ:")
-                print(build_coverage_matrix(prime_cnf, sknf_rows))
-                min_cnf = get_minimal_cover(prime_cnf, sknf_rows)
-                final_mknf = format_implicants(min_cnf, vars_tuple, is_cnf=True)
-
-            
-
-            # 6. Карта Карно
-            print("\n>>> ТАБЛИЧНЫЙ МЕТОД (КАРТА КАРНО):")
-            k_map = build_karnaugh_map_string(table, len(vars_tuple), vars_tuple)
-            print(k_map)
-
-            print("\nИТОГОВЫЕ МИНИМАЛЬНЫЕ ФОРМЫ:")
-            print(f"МДНФ: {final_mdnf}")
-            print(f"МКНФ: {final_mknf}")
-            
+                print(f"1. Метод Квайна (Склеивание):  {quine_algorithm(zeros, vars_tuple, True)}")
+                print(f"2. Метод QM (Группировка):     {qm_algorithm(zeros, vars_tuple, True)}")
+                print(f"3. Метод Карно (Геометрия):    {kmap_algorithm(zeros, vars_tuple, True)}")
             print("\n" + "="*60)
 
         except Exception as e:
             print(f"\n[!] ПРОИЗОШЛА ОШИБКА: {e}")
-            # Для отладки раскомментируйте строку ниже:
-            # import traceback; traceback.print_exc()
 
 if __name__ == "__main__":
     run()
