@@ -103,10 +103,7 @@ def run():
             zeros = tuple(row[0] for row in table if row[1] == 0)
 
             # 7. Визуализация
-            print("\n" + "="*40)
-            print("ВИЗУАЛИЗАЦИЯ (КАРТА КАРНО)")
-            print("="*40)
-            print(build_karnaugh_map_string(table, len(vars_tuple), vars_tuple))
+            
             
             # 5. Минимизация МДНФ
             print("\n" + "="*40)
@@ -121,6 +118,10 @@ def run():
                 # В новых алгоритмах логика поиска импликант встроена внутрь
                 print(f"1. Метод Квайна (Склеивание):  {quine_algorithm(ones, vars_tuple, False)}")
                 print(f"2. Метод QM (Группировка):     {qm_algorithm(ones, vars_tuple, False)}")
+                print("\n" + "="*40)
+                print("ВИЗУАЛИЗАЦИЯ (КАРТА КАРНО)")
+                print("="*40)
+                print(build_karnaugh_map_string(table, len(vars_tuple), vars_tuple))
                 print(f"3. Метод Карно (Геометрия):    {kmap_algorithm(ones, vars_tuple, False)}")
 
             # 6. Минимизация МКНФ
@@ -135,6 +136,10 @@ def run():
             else:
                 print(f"1. Метод Квайна (Склеивание):  {quine_algorithm(zeros, vars_tuple, True)}")
                 print(f"2. Метод QM (Группировка):     {qm_algorithm(zeros, vars_tuple, True)}")
+                print("\n" + "="*40)
+                print("ВИЗУАЛИЗАЦИЯ (КАРТА КАРНО)")
+                print("="*40)
+                print(build_karnaugh_map_string(table, len(vars_tuple), vars_tuple))
                 print(f"3. Метод Карно (Геометрия):    {kmap_algorithm(zeros, vars_tuple, True)}")
             print("\n" + "="*60)
 

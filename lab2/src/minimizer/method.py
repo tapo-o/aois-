@@ -55,7 +55,6 @@ def quine_algorithm(terms: Tuple[Tuple[int, ...], ...], vars_tuple: Tuple[str, .
                     used.add(list_terms[i])
                     used.add(list_terms[j])
         
-        # Те, что не склеились — простые импликанты
         primes = current - used
         if primes:
             print(f"  Найдено простых импликант: {[format_term(p) for p in primes]}")
