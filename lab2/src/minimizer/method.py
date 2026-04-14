@@ -19,10 +19,17 @@ def format_implicants(implicants, vars_tuple, is_cnf=False):
                 parts.append(f"{vars_tuple[i]}" if val == 0 else f"!{vars_tuple[i]}")
             else:
                 parts.append(f"{vars_tuple[i]}" if val == 1 else f"!{vars_tuple[i]}")
+        
+        # ИСПРАВЛЕНИЕ 1: Если импликанта состоит только из -1
+        # Это значит функция тождественно равна 1 (для МДНФ) или 0 (для МКНФ)
+        if not parts:
+            return "0" if is_cnf else "1"
+            
         if len(parts) > 1:
             formatted_list.append(f"({' | '.join(parts)})" if is_cnf else f"({' & '.join(parts)})")
         elif len(parts) == 1:
             formatted_list.append(parts[0])
+            
     return (" & " if is_cnf else " | ").join(formatted_list)
 
 # === 1. ЛОГИКА МЕТОДА КВАЙНА (ПОСЛЕДОВАТЕЛЬНОЕ СКЛЕИВАНИЕ) ===
@@ -65,8 +72,20 @@ def quine_algorithm(terms: Tuple[Tuple[int, ...], ...], vars_tuple: Tuple[str, .
     print("\nТаблица покрытия:")
     print(build_coverage_matrix(sorted(prime_implicants), terms))
 
+    # ИСПРАВЛЕНИЕ 2: Правильный выбор импликант (Ядро + Жадный выбор)
     uncovered = set(terms)
     final_set = []
+    
+    # Сначала ищем ЯДЕРНЫЕ импликанты (они обязательны!)
+    for m in terms:
+        hits = [p for p in prime_implicants if covers(p, m)]
+        if len(hits) == 1 and hits[0] not in final_set:
+            final_set.append(hits[0])
+            
+    # Вычеркиваем клетки, которые мы уже закрыли ядром
+    uncovered = {m for m in uncovered if not any(covers(p, m) for p in final_set)}
+
+    # Только теперь применяем жадный алгоритм для "добивания" оставшихся клеток
     while uncovered:
         best = max(prime_implicants, key=lambda core: sum(1 for m in uncovered if covers(core, m)))
         final_set.append(best)
@@ -113,7 +132,6 @@ def qm_algorithm(terms: Tuple[Tuple[int, ...], ...], vars_tuple: Tuple[str, ...]
 
     cover = []
     uncovered = list(terms)
-    # Поиск ядерных импликант
     for m in terms:
         hits = [p for p in prime_implicants if covers(p, m)]
         if len(hits) == 1 and hits[0] not in cover:
