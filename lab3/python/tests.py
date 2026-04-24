@@ -8,10 +8,6 @@ import circuits
 import main
 from constants import OFFSET_N
 
-
-# ==========================================
-# Тесты для Implicant.py
-# ==========================================
 class TestImplicant:
     def test_is_equal(self):
         imp1 = Implicant(value=2, mask=1)
@@ -24,7 +20,6 @@ class TestImplicant:
         assert imp1.is_equal(imp4) is False
 
     def test_covers(self):
-        # implicant "10-" (value=4, mask=1) -> покрывает 100 (4) и 101 (5)
         imp = Implicant(value=4, mask=1)
         assert imp.covers(4) is True
         assert imp.covers(5) is True
@@ -32,12 +27,8 @@ class TestImplicant:
         assert imp.covers(0) is False
 
 
-# ==========================================
-# Тесты для qm.py (Quine-McCluskey)
-# ==========================================
 class TestQM:
     def test_differ_by_one_bit(self):
-        # 000 и 001 отличаются на 1 бит (маски одинаковые)
         imp1 = Implicant(value=0, mask=0)
         imp2 = Implicant(value=1, mask=0)
         can_merge, merged = qm.differ_by_one_bit(imp1, imp2)
@@ -45,22 +36,22 @@ class TestQM:
         assert merged.value == 0
         assert merged.mask == 1
 
-        # Различаются более чем на 1 бит (000 и 011)
+          
         imp3 = Implicant(value=3, mask=0)
         can_merge, merged = qm.differ_by_one_bit(imp1, imp3)
         assert can_merge is False
 
-        # Разные маски
+          
         imp4 = Implicant(value=0, mask=1)
         can_merge, merged = qm.differ_by_one_bit(imp1, imp4)
         assert can_merge is False
 
     def test_generate_sdnf(self):
         vars_names = ["A", "B"]
-        # Пустой список минтермов
+          
         assert qm.generate_sdnf(2, [], vars_names) == "0"
         
-        # Минтермы 1 (01) и 3 (11)
+          
         sdnf = qm.generate_sdnf(2, [1, 3], vars_names)
         assert sdnf == "(!A & B) | (A & B)"
 
@@ -68,34 +59,34 @@ class TestQM:
         assert qm.minimize(2, [], [], ["A", "B"]) == "0"
 
     def test_minimize_full_cover(self):
-        # 2 переменные, минтермы 0, 1, 2, 3 -> всегда 1
+          
         assert qm.minimize(2, [0, 1, 2, 3], [], ["A", "B"]) == "1"
 
     def test_minimize_with_dont_cares(self):
-        # Минтерм 3 (11), don't care 1 (01)
-        # Суммарно могут схлопнуться в -1 (т.е. просто B)
+          
+          
         res = qm.minimize(2, [3], [1], ["A", "B"])
         assert res == "(B)"
 
     def test_minimize_complex(self):
-        # Как в сумматоре: [1, 2, 4, 7]
+          
         res = qm.minimize(3, [1, 2, 4, 7], None, ["X1", "X2", "X3"])
         assert "(!X1 & !X2 & X3)" in res
         assert "(X1 & X2 & X3)" in res
 
     def test_internal_append_unique(self):
-        # Покрытие приватной функции для 100%
+          
         items = [Implicant(1, 0)]
         new_items = qm._append_unique(items, Implicant(1, 0))
-        assert len(new_items) == 1  # не добавился дубликат
+        assert len(new_items) == 1    
         
         new_items2 = qm._append_unique(items, Implicant(2, 0))
-        assert len(new_items2) == 2  # добавился новый
+        assert len(new_items2) == 2    
 
 
-# ==========================================
-# Тесты для circuits.py
-# ==========================================
+  
+  
+  
 class TestCircuits:
     @pytest.mark.parametrize("value, expected_val, expected_valid", [
         (0, 0, True),
@@ -115,7 +106,7 @@ class TestCircuits:
         (4, 4),
         (5, 8),
         (9, 12),
-        (15, 0), # Неизвестное значение отдает default 0
+        (15, 0),   
     ])
     def test_encode_5421(self, value, expected):
         assert circuits.encode_5421(value) == expected
@@ -152,26 +143,26 @@ class TestCircuits:
         assert names == ["T2", "T1", "T0"]
 
 
-# ==========================================
-# Тесты для main.py
-# ==========================================
+  
+  
+  
 class TestMain:
     def test_print_equations(self, capsys):
-        # Тестируем вспомогательную функцию печати
+          
         eqs = [Equation(name="Test", sdnf="SDNF_STR", minimized="MIN_STR")]
         
-        # Без SDNF
+          
         main._print_equations("Title 1", eqs, False)
         captured = capsys.readouterr()
         assert "Title 1\nTest = MIN_STR\n\n" in captured.out
         
-        # С SDNF
+          
         main._print_equations("Title 2", eqs, True)
         captured = capsys.readouterr()
         assert "Title 2\nTest:\nSDNF: SDNF_STR\nMinimized: MIN_STR\n" in captured.out
 
     def test_main_execution(self, capsys):
-        # Проверяем, что главная функция отрабатывает от начала до конца без крашей
+          
         main.main()
         captured = capsys.readouterr()
         
