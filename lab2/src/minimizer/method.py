@@ -91,7 +91,7 @@ def quine_algorithm(terms: Tuple[Tuple[int, ...], ...], vars_tuple: Tuple[str, .
         final_set.append(best)
         uncovered = {m for m in uncovered if not covers(best, m)}
     
-    return format_implicants(final_set, vars_tuple, is_cnf)
+    return format_implicants(final_set, vars_tuple, is_cnf)y
 
 # === 2. ЛОГИКА МЕТОДА КВАЙНА-МАККЛАСКИ (ГРУППИРОВКА ПО ВЕСУ) ===
 
